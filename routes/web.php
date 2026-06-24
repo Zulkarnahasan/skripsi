@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminApplicantController;
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AdminManualScoreController;
 use App\Http\Controllers\AdminQuotaController;
 use App\Http\Controllers\AdminRegistrationController;
 use App\Http\Controllers\AdminTestAnswerController;
@@ -59,6 +60,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::post('/test-questions/settings', [TestQuestionController::class, 'updateSetting'])->name('test-questions.settings');
     Route::resource('/test-questions', TestQuestionController::class)->parameters(['test-questions' => 'testQuestion'])->except('show');
     Route::get('/test-answers', [AdminTestAnswerController::class, 'index'])->name('test-answers.index');
+    Route::get('/manual-scores', [AdminManualScoreController::class, 'index'])->name('manual-scores.index');
+    Route::post('/manual-scores', [AdminManualScoreController::class, 'store'])->name('manual-scores.store');
     Route::get('/quota', [AdminQuotaController::class, 'edit'])->name('admin.quota');
     Route::post('/quota', [AdminQuotaController::class, 'update'])->name('admin.quota.update');
     Route::get('/saw/process', [SawCalculationController::class, 'processForm'])->name('saw.process');

@@ -10,6 +10,7 @@
         ['label' => 'Kriteria', 'route' => 'criteria.index', 'active' => 'criteria.*', 'icon' => 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01'],
         ['label' => 'Soal Tes', 'route' => 'test-questions.index', 'active' => 'test-questions.*', 'icon' => 'M9 12h6M9 16h6M8 2h8l4 4v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h2ZM16 2v5h5'],
         ['label' => 'Jawaban Tes', 'route' => 'test-answers.index', 'active' => 'test-answers.*', 'icon' => 'M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11'],
+        ['label' => 'Nilai Manual', 'route' => 'manual-scores.index', 'active' => 'manual-scores.*', 'icon' => 'M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z'],
         ['label' => 'Kuota Lulus', 'route' => 'admin.quota', 'active' => 'admin.quota', 'icon' => 'M16 21v-2a4 4 0 0 0-8 0v2M12 3l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 15.4 7.2 18l.9-5.4-3.9-3.8 5.4-.8L12 3Z'],
         ['label' => 'Nilai Terhitung', 'route' => 'saw.normalization', 'active' => 'saw.normalization', 'icon' => 'M3 3v18h18M7 15l4-4 3 3 5-7'],
         ['label' => 'Hasil SAW', 'route' => 'saw.results', 'active' => 'saw.results', 'icon' => 'M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11'],

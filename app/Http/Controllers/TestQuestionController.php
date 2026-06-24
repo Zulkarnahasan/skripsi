@@ -6,6 +6,7 @@ use App\Models\Criteria;
 use App\Models\TestQuestion;
 use App\Models\TestSetting;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class TestQuestionController extends Controller
 {
@@ -13,6 +14,7 @@ class TestQuestionController extends Controller
     {
         $setting = TestSetting::current();
         $criteria = Criteria::query()
+            ->whereNotIn('code', ['C7', 'C8'])
             ->with(['testQuestions' => fn ($query) => $query
                 ->orderBy('sort_order')
                 ->orderBy('id')])
@@ -39,7 +41,7 @@ class TestQuestionController extends Controller
 
     public function create()
     {
-        $criteria = Criteria::query()->orderBy('code')->get();
+        $criteria = $this->testCriteria()->get();
 
         return view('admin.test-questions.create', compact('criteria'));
     }
@@ -53,7 +55,7 @@ class TestQuestionController extends Controller
 
     public function edit(TestQuestion $testQuestion)
     {
-        $criteria = Criteria::query()->orderBy('code')->get();
+        $criteria = $this->testCriteria()->get();
 
         return view('admin.test-questions.edit', compact('testQuestion', 'criteria'));
     }
@@ -75,7 +77,10 @@ class TestQuestionController extends Controller
     private function validated(Request $request): array
     {
         $data = $request->validate([
-            'criteria_id' => ['required', 'exists:criteria,id'],
+            'criteria_id' => [
+                'required',
+                Rule::exists('criteria', 'id')->where(fn ($query) => $query->whereNotIn('code', ['C7', 'C8'])),
+            ],
             'question' => ['required', 'string', 'max:1000'],
             'option_a' => ['required', 'string', 'max:255'],
             'option_b' => ['required', 'string', 'max:255'],
@@ -90,5 +95,12 @@ class TestQuestionController extends Controller
         $data['is_active'] = $request->boolean('is_active');
 
         return $data;
+    }
+
+    private function testCriteria()
+    {
+        return Criteria::query()
+            ->whereNotIn('code', ['C7', 'C8'])
+            ->orderBy('code');
     }
 }
