@@ -31,12 +31,14 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $criteria = [
-            ['C1', 'Bahasa Indonesia', 'benefit', 0.1667, 'Nilai Bahasa Indonesia.', 'Kalimat efektif adalah kalimat yang...', 'Bertele-tele', 'Mudah dipahami dan sesuai kaidah', 'Selalu panjang', 'Tidak memakai tanda baca', 'B'],
-            ['C2', 'IPA', 'benefit', 0.1667, 'Nilai Ilmu Pengetahuan Alam.', 'Proses tumbuhan membuat makanan sendiri disebut...', 'Respirasi', 'Fotosintesis', 'Evaporasi', 'Fermentasi', 'B'],
-            ['C3', 'IPS', 'benefit', 0.1667, 'Nilai Ilmu Pengetahuan Sosial.', 'Kegiatan menyalurkan barang dari produsen ke konsumen disebut...', 'Produksi', 'Konsumsi', 'Distribusi', 'Investasi', 'C'],
-            ['C4', 'Bahasa Inggris', 'benefit', 0.1667, 'Nilai Bahasa Inggris.', 'The correct translation of "Saya belajar setiap hari" is...', 'I study every day', 'I studied tomorrow', 'I am eat daily', 'I learns every day', 'A'],
-            ['C5', 'Agama', 'benefit', 0.1667, 'Nilai Pendidikan Agama.', 'Sikap jujur berarti...', 'Mengatakan sesuatu sesuai kenyataan', 'Menghindari tanggung jawab', 'Mengambil hak orang lain', 'Menyembunyikan semua informasi', 'A'],
-            ['C6', 'Matematika', 'benefit', 0.1665, 'Nilai Matematika.', 'Hasil dari 12 + 8 adalah...', '18', '20', '22', '24', 'B'],
+            ['C1', 'Bahasa Indonesia', 'benefit', 0.1250, 'Nilai Bahasa Indonesia.', 'Kalimat efektif adalah kalimat yang...', 'Bertele-tele', 'Mudah dipahami dan sesuai kaidah', 'Selalu panjang', 'Tidak memakai tanda baca', 'B'],
+            ['C2', 'IPA', 'benefit', 0.1250, 'Nilai Ilmu Pengetahuan Alam.', 'Proses tumbuhan membuat makanan sendiri disebut...', 'Respirasi', 'Fotosintesis', 'Evaporasi', 'Fermentasi', 'B'],
+            ['C3', 'IPS', 'benefit', 0.1250, 'Nilai Ilmu Pengetahuan Sosial.', 'Kegiatan menyalurkan barang dari produsen ke konsumen disebut...', 'Produksi', 'Konsumsi', 'Distribusi', 'Investasi', 'C'],
+            ['C4', 'Bahasa Inggris', 'benefit', 0.1250, 'Nilai Bahasa Inggris.', 'The correct translation of "Saya belajar setiap hari" is...', 'I study every day', 'I studied tomorrow', 'I am eat daily', 'I learns every day', 'A'],
+            ['C5', 'Agama', 'benefit', 0.1250, 'Nilai Pendidikan Agama.', 'Sikap jujur berarti...', 'Mengatakan sesuatu sesuai kenyataan', 'Menghindari tanggung jawab', 'Mengambil hak orang lain', 'Menyembunyikan semua informasi', 'A'],
+            ['C6', 'Matematika', 'benefit', 0.1250, 'Nilai Matematika.', 'Hasil dari 12 + 8 adalah...', '18', '20', '22', '24', 'B'],
+            ['C7', 'Wawancara', 'benefit', 0.1250, 'Nilai wawancara calon penerima.', null, null, null, null, null, null],
+            ['C8', 'Baca Quran', 'benefit', 0.1250, 'Nilai kemampuan membaca Al-Quran.', null, null, null, null, null, null],
         ];
 
         Criteria::query()
@@ -60,18 +62,20 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
 
-            TestQuestion::query()->updateOrCreate([
-                'criteria_id' => $criterion->id,
-                'sort_order' => 1,
-            ], [
-                'question' => $question,
-                'option_a' => $optionA,
-                'option_b' => $optionB,
-                'option_c' => $optionC,
-                'option_d' => $optionD,
-                'correct_answer' => $correctAnswer,
-                'is_active' => true,
-            ]);
+            if ($question) {
+                TestQuestion::query()->updateOrCreate([
+                    'criteria_id' => $criterion->id,
+                    'sort_order' => 1,
+                ], [
+                    'question' => $question,
+                    'option_a' => $optionA,
+                    'option_b' => $optionB,
+                    'option_c' => $optionC,
+                    'option_d' => $optionD,
+                    'correct_answer' => $correctAnswer,
+                    'is_active' => true,
+                ]);
+            }
         }
     }
 }
