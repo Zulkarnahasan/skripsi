@@ -1,0 +1,76 @@
+<?php
+
+use App\Http\Controllers\AdminApplicantController;
+use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AdminQuotaController;
+use App\Http\Controllers\AdminRegistrationController;
+use App\Http\Controllers\AdminTestAnswerController;
+use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CriteriaController;
+use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SawCalculationController;
+use App\Http\Controllers\SawResultController;
+use App\Http\Controllers\StudentProfileController;
+use App\Http\Controllers\SubCriteriaController;
+use App\Http\Controllers\TestQuestionController;
+use App\Http\Controllers\UserDashboardController;
+use App\Http\Controllers\UserResultController;
+use App\Http\Controllers\UserTestController;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', [AuthController::class, 'showLogin'])->name('home');
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
+Route::middleware(['auth', 'role:user', 'auto.submit.test'])->prefix('user')->group(function () {
+    Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard');
+    Route::get('/profile', [StudentProfileController::class, 'edit'])->name('user.profile');
+    Route::post('/profile', [StudentProfileController::class, 'update']);
+    Route::get('/test', [UserTestController::class, 'index'])->name('user.test');
+    Route::post('/test/start', [UserTestController::class, 'start'])->name('user.test.start');
+    Route::post('/test/auto-submit', [UserTestController::class, 'autoSubmit'])->name('user.test.auto-submit');
+    Route::post('/test', [UserTestController::class, 'store']);
+    Route::get('/documents', [DocumentController::class, 'index'])->name('user.documents');
+    Route::post('/documents', [DocumentController::class, 'store']);
+    Route::get('/status', [UserResultController::class, 'status'])->name('user.status');
+    Route::get('/result', [UserResultController::class, 'result'])->name('user.result');
+    Route::get('/notifications', [NotificationController::class, 'userIndex'])->name('user.notifications');
+});
+
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/registration', [AdminRegistrationController::class, 'edit'])->name('admin.registration');
+    Route::post('/registration', [AdminRegistrationController::class, 'update'])->name('admin.registration.update');
+    Route::get('/users', [AdminUserController::class, 'index'])->name('admin.users');
+    Route::patch('/users/{user}/deactivate', [AdminUserController::class, 'deactivate'])->name('admin.users.deactivate');
+    Route::patch('/users/{user}/activate', [AdminUserController::class, 'activate'])->name('admin.users.activate');
+    Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
+    Route::get('/applicants', [AdminApplicantController::class, 'index'])->name('applicants.index');
+    Route::get('/applicants/{applicant}', [AdminApplicantController::class, 'show'])->name('applicants.show');
+    Route::patch('/applicants/{applicant}/status', [AdminApplicantController::class, 'updateStatus'])->name('applicants.status');
+    Route::resource('/criteria', CriteriaController::class)->except('show');
+    Route::resource('/sub-criteria', SubCriteriaController::class)->parameters(['sub-criteria' => 'subCriterion'])->except('show');
+    Route::post('/test-questions/settings', [TestQuestionController::class, 'updateSetting'])->name('test-questions.settings');
+    Route::resource('/test-questions', TestQuestionController::class)->parameters(['test-questions' => 'testQuestion'])->except('show');
+    Route::get('/test-answers', [AdminTestAnswerController::class, 'index'])->name('test-answers.index');
+    Route::get('/quota', [AdminQuotaController::class, 'edit'])->name('admin.quota');
+    Route::post('/quota', [AdminQuotaController::class, 'update'])->name('admin.quota.update');
+    Route::get('/saw/process', [SawCalculationController::class, 'processForm'])->name('saw.process');
+    Route::post('/saw/scores', [SawCalculationController::class, 'storeScores'])->name('saw.scores');
+    Route::post('/saw/process', [SawCalculationController::class, 'process'])->name('saw.calculate');
+    Route::get('/saw/normalization', [SawResultController::class, 'normalization'])->name('saw.normalization');
+    Route::get('/saw/results', [SawResultController::class, 'results'])->name('saw.results');
+    Route::patch('/saw/results/{result}/status', [SawResultController::class, 'updateStatus'])->name('saw.results.status');
+    Route::get('/saw/ranking', [SawResultController::class, 'ranking'])->name('saw.ranking');
+    Route::post('/saw/announce', [SawResultController::class, 'announce'])->name('saw.announce');
+    Route::get('/notifications', [NotificationController::class, 'adminIndex'])->name('admin.notifications');
+    Route::post('/notifications', [NotificationController::class, 'store']);
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/print', [ReportController::class, 'print'])->name('reports.print');
+});
