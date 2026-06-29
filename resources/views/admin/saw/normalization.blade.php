@@ -60,6 +60,7 @@
             @php
                 $scores = $alternative->scores->sortBy(fn ($score) => $score->criteria?->code ?? $score->criteria_id);
                 $collapseId = 'calculated-'.$alternative->id;
+                $finalScore = (float) ($alternative->sawResult?->final_score ?? $scores->sum('weighted_value')) * 100;
             @endphp
             <div class="accordion-item mb-3">
                 <h2 class="accordion-header" id="heading-{{ $collapseId }}">
@@ -72,7 +73,7 @@
                                 </span>
                             </span>
                             <span class="d-flex flex-wrap gap-2">
-                                <span class="badge text-bg-primary">Nilai akhir {{ number_format((float) ($alternative->sawResult?->final_score ?? $scores->sum('weighted_value')), 4) }}</span>
+                                <span class="badge text-bg-primary">Nilai akhir {{ number_format($finalScore, 2, ',', '.') }}/100</span>
                                 @if($alternative->sawResult?->rank)
                                     <span class="badge badge-soft">Rank {{ $alternative->sawResult->rank }}</span>
                                 @endif
@@ -91,7 +92,7 @@
                                         <th>Nilai Awal</th>
                                         <th>Skor</th>
                                         <th>Normalisasi</th>
-                                        <th>Nilai Terbobot</th>
+                                        <th>Kontribusi Akhir</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -102,11 +103,11 @@
                                                 <strong>{{ $score->criteria?->code }}</strong>
                                                 <div class="text-secondary small">{{ $score->criteria?->name }}</div>
                                             </td>
-                                            <td>{{ number_format((float) $score->raw_value, 2) }}</td>
-                                            <td>{{ number_format((float) $score->score, 2) }}</td>
-                                            <td>{{ number_format((float) $score->normalized_value, 4) }}</td>
+                                            <td>{{ number_format((float) $score->raw_value, 0, ',', '.') }}/100</td>
+                                            <td>{{ number_format((float) $score->score, 0, ',', '.') }}/100</td>
+                                            <td>{{ number_format((float) $score->normalized_value * 100, 2, ',', '.') }}%</td>
                                             <td>
-                                                <span class="badge text-bg-primary">{{ number_format((float) $score->weighted_value, 4) }}</span>
+                                                <span class="badge text-bg-primary">{{ number_format((float) $score->weighted_value * 100, 2, ',', '.') }}</span>
                                             </td>
                                         </tr>
                                     @endforeach

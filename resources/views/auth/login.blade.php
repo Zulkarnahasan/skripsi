@@ -10,7 +10,6 @@
                         <img class="auth-logo" src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Logo-umt.png" alt="Logo Universitas Muhammadiyah Tangerang">
                     </a>
                     <img class="auth-logo" src="{{ asset('images/permakip-logo.png') }}" alt="Logo PERMAKIP Unit Indonesia">
-                    <img class="auth-logo" src="https://commons.wikimedia.org/wiki/Special:FilePath/Logo%20Kemendikbud.svg" alt="Logo Kemendikbud">
                 </div>
                 <div class="auth-visual-title">
                     <p class="mb-0">Portal KIP-K untuk pendaftar Universitas Muhammadiyah Tangerang.</p>
@@ -19,9 +18,19 @@
             <div class="auth-form-panel">
                 <div>
                     <h2 class="h4 auth-form-title">Ujian Penerimaan Mahasiswa KIP-K Universitas Muhammadiyah Tangerang</h2>
-                    <form method="post" action="/login">@csrf
-                        <div class="mb-3"><label class="form-label">Email / NISN</label><input name="login" class="form-control" value="{{ old('login') }}" required></div>
-                        <div class="mb-3"><label class="form-label">Password / Nomor Akun KIP</label><div class="input-group"><input name="password" type="password" class="form-control" data-password required><button class="btn btn-outline-secondary" type="button" data-toggle-password aria-label="Lihat password">👁️</button></div></div>
+                    <form method="post" action="/login">
+                        @csrf
+                        <div class="mb-3">
+                            <label class="form-label">Nomor Akun KIP</label>
+                            <input name="login" class="form-control" value="{{ old('login') }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <div class="input-group">
+                                <input name="password" type="password" class="form-control" data-password required>
+                                <button class="btn btn-outline-secondary" type="button" data-toggle-password aria-label="Lihat password">Lihat</button>
+                            </div>
+                        </div>
                         <button class="btn btn-primary w-100">Masuk</button>
                         @if($setting->registration_open)
                             <a class="btn btn-outline-primary w-100 mt-2" href="{{ route('register') }}">Buat akun</a>

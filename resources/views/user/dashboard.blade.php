@@ -6,19 +6,38 @@
     $resultLabels = ['accepted' => 'Lulus', 'rejected' => 'Tidak Lulus'];
     $resultStatus = $resultLabels[$user->alternative?->sawResult?->status] ?? 'Belum ada';
     $documentsCount = $user->documents->count();
+    $requiredDocumentCount = count(\App\Models\Document::requiredTypeKeys());
+    $uploadedRequiredDocumentCount = $user->documents
+        ->whereIn('document_type', \App\Models\Document::requiredTypeKeys())
+        ->pluck('document_type')
+        ->unique()
+        ->count();
+    $profilePhoto = $user->studentProfile?->profile_photo_path;
+    $profileComplete = $user->hasCompleteProfile();
+    $documentsComplete = $profileComplete && $uploadedRequiredDocumentCount >= $requiredDocumentCount;
+    $resultReady = $documentsComplete;
 @endphp
 
 <div class="content-card user-hero mb-3" data-reveal>
-    <div>
-        <div class="hero-kicker">Dashboard Pendaftar</div>
-        <h1 class="h3 mb-2">Halo, {{ $user->name }}</h1>
-        <p class="text-secondary mb-0">Nomor registrasi: <strong>{{ $user->alternative?->registration_number ?? '-' }}</strong></p>
+    <div class="d-flex flex-wrap align-items-center gap-3">
+        <div class="rounded-circle overflow-hidden bg-light border d-flex align-items-center justify-content-center flex-shrink-0" style="width: 96px; height: 96px;">
+            @if($profilePhoto)
+                <img src="{{ asset('storage/'.$profilePhoto) }}" alt="Foto profil {{ $user->name }}" class="w-100 h-100 object-fit-cover">
+            @else
+                <span class="fs-3 fw-bold text-secondary">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+            @endif
+        </div>
+        <div>
+            <div class="hero-kicker">Dashboard Pendaftar</div>
+            <h1 class="h3 mb-2">Halo, {{ $user->name }}</h1>
+            <p class="text-secondary mb-0">Nomor registrasi: <strong>{{ $user->alternative?->registration_number ?? '-' }}</strong></p>
+        </div>
     </div>
     <div class="quick-actions">
         <a class="soft-button" href="{{ route('user.profile') }}">Lengkapi Profil</a>
-        <a class="soft-button" href="{{ route('user.test') }}">Isi Tes</a>
         <a class="soft-button" href="{{ route('user.documents') }}">Upload Dokumen</a>
         <a class="soft-button" href="{{ route('user.status') }}">Cek Status</a>
+        <a class="soft-button ms-lg-auto" href="{{ route('user.test') }}">Isi Tes</a>
     </div>
 </div>
 
@@ -33,8 +52,8 @@
     <div class="col-md-4" data-reveal>
         <div class="stat-card interactive-card" style="--accent: var(--blue);">
             <small>Dokumen</small>
-            <div class="fs-5 fw-bold mt-1">{{ $documentsCount }} file</div>
-            <div class="text-secondary small mt-2">Berkas yang sudah terunggah.</div>
+            <div class="fs-5 fw-bold mt-1">{{ $uploadedRequiredDocumentCount }}/{{ $requiredDocumentCount }} wajib</div>
+            <div class="text-secondary small mt-2">{{ $documentsCount }} total file sudah terunggah.</div>
         </div>
     </div>
     <div class="col-md-4" data-reveal>
@@ -119,25 +138,25 @@
         <span class="badge badge-soft">Interaktif</span>
     </div>
     <div class="timeline">
-        <div class="timeline-item {{ $user->studentProfile ? 'done' : '' }}">
+        <div class="timeline-item {{ $profileComplete ? 'done' : '' }}">
             <span class="timeline-dot">1</span>
             <div>
                 <strong>Profil pendaftar</strong>
-                <div class="text-secondary small">{{ $user->studentProfile ? 'Profil sudah tersimpan.' : 'Lengkapi data profil terlebih dahulu.' }}</div>
+                <div class="text-secondary small">{{ $profileComplete ? 'Profil sudah lengkap.' : 'Lengkapi semua bagian profil yang masih bertanda X merah.' }}</div>
             </div>
         </div>
-        <div class="timeline-item {{ $documentsCount > 0 ? 'done' : '' }}">
+        <div class="timeline-item {{ $documentsComplete ? 'done' : '' }}">
             <span class="timeline-dot">2</span>
             <div>
                 <strong>Dokumen pendukung</strong>
-                <div class="text-secondary small">{{ $documentsCount > 0 ? $documentsCount.' dokumen sudah diunggah.' : 'Unggah dokumen yang diminta panitia.' }}</div>
+                <div class="text-secondary small">{{ $profileComplete ? ($documentsComplete ? 'Semua dokumen wajib sudah diunggah.' : $uploadedRequiredDocumentCount.'/'.$requiredDocumentCount.' dokumen wajib sudah diunggah.') : 'Tahap ini terbuka setelah profil lengkap.' }}</div>
             </div>
         </div>
-        <div class="timeline-item {{ $user->alternative?->sawResult?->announced_at ? 'done' : '' }}">
+        <div class="timeline-item {{ $resultReady ? 'done' : '' }}">
             <span class="timeline-dot">3</span>
             <div>
-                <strong>Pengumuman hasil</strong>
-                <div class="text-secondary small">{{ $user->alternative?->sawResult?->announced_at ? 'Hasil sudah diumumkan.' : 'Menunggu proses verifikasi dan pengumuman admin.' }}</div>
+                <strong>Informasi hasil</strong>
+                <div class="text-secondary small">{{ $profileComplete ? 'Pantau informasi hasil melalui Instagram resmi PERMAKIP UMT.' : 'Selesaikan profil sebelum lanjut ke tahapan berikutnya.' }}</div>
             </div>
         </div>
     </div>

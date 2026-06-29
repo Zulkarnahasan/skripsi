@@ -53,13 +53,6 @@ class SawResultController extends Controller
         return view('admin.saw.ranking', compact('results'));
     }
 
-    public function announce()
-    {
-        SawResult::query()->update(['announced_at' => now()]);
-
-        return back()->with('success', 'Hasil seleksi diumumkan.');
-    }
-
     public function updateStatus(Request $request, SawResult $result)
     {
         $data = $request->validate([

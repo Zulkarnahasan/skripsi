@@ -92,7 +92,7 @@
         </div>
     </div>
 
-    @if(! $alternative)
+    @if(! $profileComplete || ! $alternative)
         <div class="alert alert-warning mb-0">
             Lengkapi profil terlebih dahulu sebelum mengisi tes.
             <a href="{{ route('user.profile') }}">Buka profil</a>

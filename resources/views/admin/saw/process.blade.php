@@ -5,7 +5,7 @@
     <h1 class="h4">Input Nilai Alternatif</h1>
     <form method="post" action="{{ route('saw.scores') }}">@csrf
         <div class="table-responsive"><table class="table"><thead><tr><th>Pendaftar</th>@foreach($criteria as $criterion)<th>{{ $criterion->code }}</th>@endforeach</tr></thead><tbody>
-            @foreach($alternatives as $alternative)<tr><td>{{ $alternative->user->name }}</td>@foreach($criteria as $criterion)@php($score=$alternative->scores->firstWhere('criteria_id',$criterion->id))<td><input class="form-control" type="number" step="0.0001" name="scores[{{ $alternative->id }}][{{ $criterion->id }}]" value="{{ $score?->score ?? 0 }}"></td>@endforeach</tr>@endforeach
+            @foreach($alternatives as $alternative)<tr><td>{{ $alternative->user->name }}</td>@foreach($criteria as $criterion)@php($score=$alternative->scores->firstWhere('criteria_id',$criterion->id))<td><input class="form-control" type="number" min="0" max="100" step="1" name="scores[{{ $alternative->id }}][{{ $criterion->id }}]" value="{{ round((float) ($score?->score ?? 0)) }}"></td>@endforeach</tr>@endforeach
         </tbody></table></div>
         <button class="btn btn-primary">Simpan Nilai</button>
     </form>

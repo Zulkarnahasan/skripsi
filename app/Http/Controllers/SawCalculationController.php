@@ -23,7 +23,7 @@ class SawCalculationController extends Controller
     {
         $data = $request->validate([
             'scores' => ['required', 'array'],
-            'scores.*.*' => ['nullable', 'numeric', 'min:0'],
+            'scores.*.*' => ['nullable', 'numeric', 'min:0', 'max:100'],
         ]);
 
         foreach ($data['scores'] as $alternativeId => $items) {

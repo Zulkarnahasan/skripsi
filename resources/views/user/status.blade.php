@@ -1,6 +1,18 @@
 @extends('layouts.user')
 
 @section('user-content')
+@php
+    $profileComplete = $user->hasCompleteProfile();
+    $requiredDocumentCount = count(\App\Models\Document::requiredTypeKeys());
+    $uploadedRequiredDocumentCount = $user->documents
+        ->whereIn('document_type', \App\Models\Document::requiredTypeKeys())
+        ->pluck('document_type')
+        ->unique()
+        ->count();
+    $documentsComplete = $profileComplete && $uploadedRequiredDocumentCount >= $requiredDocumentCount;
+    $verificationComplete = $documentsComplete && $user->alternative?->status === 'verified';
+@endphp
+
 <div class="content-card p-4" data-reveal>
     <div class="hero-kicker">Status Verifikasi</div>
     <h1 class="h4 mb-3">Pantauan Pendaftaran</h1>
@@ -21,27 +33,27 @@
         <div class="col-md-4">
             <div class="stat-card interactive-card" style="--accent: var(--amber);">
                 <small>Dokumen Terunggah</small>
-                <div class="fs-5 fw-bold mt-1">{{ $user->documents->count() }} file</div>
+                <div class="fs-5 fw-bold mt-1">{{ $uploadedRequiredDocumentCount }}/{{ $requiredDocumentCount }} wajib</div>
             </div>
         </div>
     </div>
 
     <div class="timeline mt-4">
-        <div class="timeline-item {{ $user->studentProfile ? 'done' : '' }}">
+        <div class="timeline-item {{ $profileComplete ? 'done' : '' }}">
             <span class="timeline-dot">1</span>
             <div>
                 <strong>Profil dikirim</strong>
-                <div class="text-secondary small">{{ $user->studentProfile ? 'Data profil sudah diterima sistem.' : 'Profil belum dikirim.' }}</div>
+                <div class="text-secondary small">{{ $profileComplete ? 'Data profil sudah lengkap dan diterima sistem.' : 'Lengkapi semua bagian profil yang masih bertanda X merah.' }}</div>
             </div>
         </div>
-        <div class="timeline-item {{ $user->documents->count() > 0 ? 'done' : '' }}">
+        <div class="timeline-item {{ $documentsComplete ? 'done' : '' }}">
             <span class="timeline-dot">2</span>
             <div>
                 <strong>Dokumen masuk</strong>
-                <div class="text-secondary small">{{ $user->documents->count() > 0 ? 'Dokumen siap diverifikasi admin.' : 'Belum ada dokumen pendukung.' }}</div>
+                <div class="text-secondary small">{{ $profileComplete ? ($documentsComplete ? 'Semua dokumen wajib siap diverifikasi admin.' : $uploadedRequiredDocumentCount.'/'.$requiredDocumentCount.' dokumen wajib sudah diunggah.') : 'Tahap dokumen terbuka setelah profil lengkap.' }}</div>
             </div>
         </div>
-        <div class="timeline-item {{ $user->alternative?->status === 'verified' ? 'done' : '' }}">
+        <div class="timeline-item {{ $verificationComplete ? 'done' : '' }}">
             <span class="timeline-dot">3</span>
             <div>
                 <strong>Verifikasi admin</strong>

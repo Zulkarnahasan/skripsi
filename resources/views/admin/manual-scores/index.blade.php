@@ -5,7 +5,7 @@
     <div class="d-flex flex-wrap justify-content-between gap-3 align-items-center mb-3">
         <div>
             <div class="hero-kicker">Nilai Manual SAW</div>
-            <h1 class="h4 mb-0">Input Nilai Wawancara dan Baca Quran</h1>
+            <h1 class="h4 mb-0">Ubah Nilai User Secara Manual</h1>
         </div>
         <a class="btn btn-outline-primary" href="{{ route('saw.process') }}">Input Nilai SAW</a>
     </div>
@@ -24,11 +24,11 @@
     </form>
 
     <div class="alert alert-info">
-        Isi nilai 0 sampai 100 untuk pendaftar yang sudah terverifikasi. Nilai ini akan ikut dihitung saat admin menjalankan Proses SAW.
+        Admin dapat mengubah nilai hasil user secara manual dengan angka sederhana 0 sampai 100. Setelah menyimpan nilai, jalankan Proses SAW agar ranking dan hasil terhitung diperbarui.
     </div>
 
     @if($criteria->isEmpty())
-        <div class="text-center text-secondary py-4">Kriteria Wawancara dan Baca Quran belum tersedia. Jalankan migration terlebih dahulu.</div>
+        <div class="text-center text-secondary py-4">Kriteria SAW belum tersedia. Jalankan migration terlebih dahulu.</div>
     @elseif($alternatives->isEmpty())
         <div class="text-center text-secondary py-4">Belum ada pendaftar terverifikasi.</div>
     @else
@@ -43,7 +43,8 @@
                             <th>Asal Sekolah</th>
                             @foreach($criteria as $criterion)
                                 <th>
-                                    {{ $criterion->name }}
+                                    {{ $criterion->code }}
+                                    <div class="fw-normal">{{ $criterion->name }}</div>
                                     <div class="text-secondary small">Bobot {{ number_format((float) $criterion->weight * 100, 2, ',', '.') }}%</div>
                                 </th>
                             @endforeach
@@ -70,9 +71,9 @@
                                             type="number"
                                             min="0"
                                             max="100"
-                                            step="0.01"
+                                            step="1"
                                             name="scores[{{ $alternative->id }}][{{ $criterion->id }}]"
-                                            value="{{ old('scores.'.$alternative->id.'.'.$criterion->id, $score?->score ?? 0) }}"
+                                            value="{{ old('scores.'.$alternative->id.'.'.$criterion->id, round((float) ($score?->score ?? 0))) }}"
                                         >
                                     </td>
                                 @endforeach
@@ -84,7 +85,10 @@
 
             <div class="d-flex flex-wrap justify-content-between gap-3 align-items-center">
                 <div>{{ $alternatives->links() }}</div>
-                <button class="btn btn-primary">Simpan Nilai Manual</button>
+                <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-primary">Simpan Nilai Manual</button>
+                    <a class="btn btn-success" href="{{ route('saw.process') }}">Lanjut Proses SAW</a>
+                </div>
             </div>
         </form>
     @endif

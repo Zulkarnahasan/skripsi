@@ -12,6 +12,7 @@ class UserTestController extends Controller
 {
     public function index(Request $request)
     {
+        $profileComplete = $request->user()->hasCompleteProfile();
         $alternative = $request->user()->alternative;
         $questions = TestQuestion::query()
             ->where('is_active', true)
@@ -39,13 +40,13 @@ class UserTestController extends Controller
                 ->count() >= $questions->count()
             : false;
 
-        return view('user.test', compact('questions', 'alternative', 'answers', 'testStarted', 'durationMinutes', 'remainingSeconds', 'completed', 'setting'));
+        return view('user.test', compact('questions', 'alternative', 'answers', 'testStarted', 'durationMinutes', 'remainingSeconds', 'completed', 'setting', 'profileComplete'));
     }
 
     public function start(Request $request)
     {
-        if (! $request->user()->alternative) {
-            return redirect()->route('user.profile')->with('error', 'Lengkapi profil terlebih dahulu sebelum memulai tes.');
+        if (! $request->user()->hasCompleteProfile() || ! $request->user()->alternative) {
+            return redirect()->route('user.test')->with('error', 'Lengkapi semua bagian profil terlebih dahulu sebelum memulai tes.');
         }
 
         if (! TestSetting::current()->is_open) {
@@ -62,8 +63,8 @@ class UserTestController extends Controller
     {
         $alternative = $request->user()->alternative;
 
-        if (! $alternative) {
-            return redirect()->route('user.profile')->with('error', 'Lengkapi profil terlebih dahulu sebelum mengisi tes.');
+        if (! $request->user()->hasCompleteProfile() || ! $alternative) {
+            return redirect()->route('user.test')->with('error', 'Lengkapi semua bagian profil terlebih dahulu sebelum mengisi tes.');
         }
 
         if (! TestSetting::current()->is_open) {

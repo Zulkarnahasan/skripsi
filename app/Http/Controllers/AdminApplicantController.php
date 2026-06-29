@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Alternative;
+use App\Models\Document;
 use Illuminate\Http\Request;
 
 class AdminApplicantController extends Controller
@@ -31,9 +32,11 @@ class AdminApplicantController extends Controller
 
     public function show(Alternative $applicant)
     {
-        $applicant->load(['user', 'studentProfile.documents', 'scores.criteria', 'sawResult']);
+        $applicant->load(['user.documents', 'studentProfile', 'scores.criteria', 'sawResult']);
+        $documents = $applicant->user->documents->keyBy('document_type');
+        $documentTypes = Document::TYPES;
 
-        return view('admin.applicants.show', compact('applicant'));
+        return view('admin.applicants.show', compact('applicant', 'documents', 'documentTypes'));
     }
 
     public function updateStatus(Request $request, Alternative $applicant)
@@ -47,5 +50,26 @@ class AdminApplicantController extends Controller
         ]);
 
         return $request->expectsJson() ? response()->json(['ok' => true, 'status' => $data['status']]) : back()->with('success', 'Status diperbarui.');
+    }
+
+    public function updateDocumentStatus(Request $request, Alternative $applicant, Document $document)
+    {
+        abort_unless($document->user_id === $applicant->user_id, 404);
+
+        $data = $request->validate(['status' => ['required', 'in:verified,rejected']]);
+
+        $document->update(['status' => $data['status']]);
+
+        $statusLabels = [
+            'verified' => 'terverifikasi',
+            'rejected' => 'ditolak',
+        ];
+
+        $applicant->user->notifications()->create([
+            'title' => 'Status dokumen diperbarui',
+            'message' => Document::typeLabel($document->document_type).' '.$statusLabels[$data['status']].'.',
+        ]);
+
+        return back()->with('success', 'Status dokumen berhasil diperbarui.');
     }
 }

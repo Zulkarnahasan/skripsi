@@ -23,6 +23,11 @@ class Alternative extends Model
         return $this->hasMany(AlternativeScore::class);
     }
 
+    public function manualAssessmentScores()
+    {
+        return $this->hasMany(ManualAssessmentScore::class);
+    }
+
     public function testAnswers()
     {
         return $this->hasMany(TestAnswer::class);

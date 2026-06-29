@@ -252,13 +252,6 @@
                             <span class="notification-alert">{{ $notificationCount > 9 ? '9+' : $notificationCount }}</span>
                         @endif
                     </button>
-                    @if(auth()->user()->role === 'user')
-                        <a class="profile-link" href="{{ route('user.profile') }}" aria-label="Profil" title="Profil">
-                            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <path d="M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </a>
-                    @endif
                     <form method="post" action="{{ route('logout') }}">@csrf<button class="btn btn-sm btn-outline-danger">Logout</button></form>
                 </div>
             </div>

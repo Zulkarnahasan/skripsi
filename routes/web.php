@@ -55,11 +55,16 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/applicants', [AdminApplicantController::class, 'index'])->name('applicants.index');
     Route::get('/applicants/{applicant}', [AdminApplicantController::class, 'show'])->name('applicants.show');
     Route::patch('/applicants/{applicant}/status', [AdminApplicantController::class, 'updateStatus'])->name('applicants.status');
+    Route::patch('/applicants/{applicant}/documents/{document}/status', [AdminApplicantController::class, 'updateDocumentStatus'])->name('applicants.documents.status');
     Route::resource('/criteria', CriteriaController::class)->except('show');
     Route::resource('/sub-criteria', SubCriteriaController::class)->parameters(['sub-criteria' => 'subCriterion'])->except('show');
     Route::post('/test-questions/settings', [TestQuestionController::class, 'updateSetting'])->name('test-questions.settings');
     Route::resource('/test-questions', TestQuestionController::class)->parameters(['test-questions' => 'testQuestion'])->except('show');
     Route::get('/test-answers', [AdminTestAnswerController::class, 'index'])->name('test-answers.index');
+    Route::get('/interview-scores', [AdminManualScoreController::class, 'interview'])->name('interview-scores.index');
+    Route::post('/interview-scores', [AdminManualScoreController::class, 'storeInterview'])->name('interview-scores.store');
+    Route::get('/quran-scores', [AdminManualScoreController::class, 'quran'])->name('quran-scores.index');
+    Route::post('/quran-scores', [AdminManualScoreController::class, 'storeQuran'])->name('quran-scores.store');
     Route::get('/manual-scores', [AdminManualScoreController::class, 'index'])->name('manual-scores.index');
     Route::post('/manual-scores', [AdminManualScoreController::class, 'store'])->name('manual-scores.store');
     Route::get('/quota', [AdminQuotaController::class, 'edit'])->name('admin.quota');
@@ -71,7 +76,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/saw/results', [SawResultController::class, 'results'])->name('saw.results');
     Route::patch('/saw/results/{result}/status', [SawResultController::class, 'updateStatus'])->name('saw.results.status');
     Route::get('/saw/ranking', [SawResultController::class, 'ranking'])->name('saw.ranking');
-    Route::post('/saw/announce', [SawResultController::class, 'announce'])->name('saw.announce');
     Route::get('/notifications', [NotificationController::class, 'adminIndex'])->name('admin.notifications');
     Route::post('/notifications', [NotificationController::class, 'store']);
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');

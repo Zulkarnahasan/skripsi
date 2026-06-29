@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class AuthController extends Controller
 {
@@ -25,15 +26,15 @@ class AuthController extends Controller
         $login = $data['login'];
         $email = filter_var($login, FILTER_VALIDATE_EMAIL)
             ? $login
-            : StudentProfile::query()->where('nisn', $login)->value('user_id');
+            : User::query()->whereKey(StudentProfile::query()->where('kip_account_number', $login)->value('user_id'))->value('email');
 
         $credentials = [
-            'email' => is_numeric($email) ? User::query()->whereKey($email)->value('email') : $email,
+            'email' => $email,
             'password' => $data['password'],
         ];
 
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
-            return back()->withErrors(['login' => 'Email/NISN atau password salah.'])->onlyInput('login');
+            return back()->withErrors(['login' => 'Nomor Akun KIP atau password salah.'])->onlyInput('login');
         }
 
         if (Auth::user()->role === 'user' && ! Auth::user()->is_active) {
@@ -50,8 +51,9 @@ class AuthController extends Controller
     public function showRegister()
     {
         $setting = TestSetting::current();
+        $programs = config('umt_programs');
 
-        return view('auth.register', compact('setting'));
+        return view('auth.register', compact('setting', 'programs'));
     }
 
     public function register(Request $request)
@@ -64,24 +66,32 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:100'],
             'kip_account_number' => ['required', 'string', 'max:50', 'unique:student_profiles,kip_account_number'],
             'school_origin' => ['required', 'string', 'max:150'],
-            'entry_year' => ['required', 'integer', 'between:2000,'.(now()->year + 1)],
-            'nisn' => ['required', 'string', 'max:30', 'unique:student_profiles,nisn'],
-            'npsn' => ['required', 'string', 'max:30'],
+            'study_program' => ['required', 'string', Rule::in(array_keys(config('umt_programs')))],
+            'study_program_2' => ['required', 'string', 'different:study_program', Rule::in(array_keys(config('umt_programs')))],
+            'nisn' => ['required', 'string', 'regex:/^[0-9]{10}$/', 'unique:student_profiles,nisn'],
+            'npsn' => ['required', 'string', 'regex:/^[0-9]{8}$/'],
             'phone' => ['required', 'string', 'max:30'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
         $user = DB::transaction(function () use ($data) {
             $user = User::query()->create([
                 'name' => $data['name'],
                 'email' => strtolower($data['nisn']).'@pendaftar.kipk.local',
-                'password' => $data['kip_account_number'],
+                'password' => $data['password'],
                 'role' => 'user',
             ]);
+
+            $program = config("umt_programs.{$data['study_program']}");
+            $program2 = config("umt_programs.{$data['study_program_2']}");
 
             $profile = $user->studentProfile()->create([
                 'kip_account_number' => $data['kip_account_number'],
                 'school_origin' => $data['school_origin'],
-                'entry_year' => $data['entry_year'],
+                'study_program' => "{$program['level']} {$program['name']}",
+                'study_program_accreditation' => $program['accreditation'],
+                'study_program_2' => "{$program2['level']} {$program2['name']}",
+                'study_program_accreditation_2' => $program2['accreditation'],
                 'nisn' => $data['nisn'],
                 'npsn' => $data['npsn'],
                 'phone' => $data['phone'],

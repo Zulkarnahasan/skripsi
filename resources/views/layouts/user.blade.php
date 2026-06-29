@@ -4,6 +4,7 @@
 @php
     $userNav = [
         ['label' => 'Dashboard', 'route' => 'user.dashboard', 'icon' => 'M3 13h8V3H3v10Zm10 8h8V3h-8v18ZM3 21h8v-6H3v6Z'],
+        ['label' => 'Profil', 'route' => 'user.profile', 'icon' => 'M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z'],
         ['label' => 'Dokumen', 'route' => 'user.documents', 'icon' => 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6ZM14 2v6h6M8 13h8M8 17h5'],
         ['label' => 'Status', 'route' => 'user.status', 'icon' => 'M20 6 9 17l-5-5'],
         ['label' => 'Isi Tes', 'route' => 'user.test', 'icon' => 'M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z'],

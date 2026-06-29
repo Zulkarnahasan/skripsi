@@ -36,6 +36,11 @@ class User extends Authenticatable
         return $this->hasOne(StudentProfile::class);
     }
 
+    public function hasCompleteProfile(): bool
+    {
+        return filled($this->name) && (bool) $this->studentProfile?->isComplete();
+    }
+
     public function documents()
     {
         return $this->hasMany(Document::class);
